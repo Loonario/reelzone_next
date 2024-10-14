@@ -131,7 +131,25 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
   }
 
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // Implementation omitted for brevity
+    const files = event.target.files
+    if (files) {
+      Array.from(files).forEach(file => {
+        const fileType = file.type.split('/')[0]
+        const newMedia = {
+          id: Date.now(),
+          name: file.name,
+          preview: URL.createObjectURL(file),
+          comment: ''
+        }
+        // setUploadedMedia(prev => ({
+        //   ...prev,
+        //   [fileType === 'audio' ? 'audio' : `${fileType}s`]: [
+        //     ...prev[fileType === 'audio' ? 'audio' : `${fileType}s`],
+        //     newMedia
+        //   ]
+        // }))
+      })
+    }
   }
 
   const handleDelete = (type: 'videos' | 'images' | 'audio', id: number) => {
@@ -512,7 +530,7 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
                     <AccordionContent>
                     <div className="p-2">
                       <div className="flex justify-between items-center mb-4">
-                        <p className="flex-grow">Set number of reels you'd like to have from the Source Media, duration and complexity of each</p>
+                        <p className="flex-grow">{"Set number of reels you'd like to have from the Source Media, duration and complexity of each"}</p>
                         <Button onClick={handleAddReel}>
                           <Plus className="w-4 h-4 mr-2" />
                           Add Reel

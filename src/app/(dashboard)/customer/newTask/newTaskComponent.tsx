@@ -425,7 +425,7 @@ export default function NewTask() {
         <section>
           <h2 className="text-xl font-semibold mb-4">Reels Settings</h2>
           <div className="flex justify-between items-center mb-4">
-            <p className="flex-grow">Set number of reels you'd like to have from the Source Media, duration and complexity of each</p>
+            <p className="flex-grow">{"Set number of reels you'd like to have from the Source Media, duration and complexity of each"}</p>
             <Button onClick={handleAddReel}>
               <Plus className="w-4 h-4 mr-2" />
               Add Reel
