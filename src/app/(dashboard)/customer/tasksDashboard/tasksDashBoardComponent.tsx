@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CheckCircle, Plus } from "lucide-react"
 import Image from "next/image"
+import Link from 'next/link';
 
 
 
@@ -122,7 +123,9 @@ export default function TaskDashboardComponent() {
                         <Badge variant='inProgress'>In Progress</Badge>
                       )
                     }
+                    <Link href={"/customer/taskDetails"} >
                     <Button variant="default">Task Details</Button>
+                    </Link>
                     </div>
                   {/* {
                     {
@@ -152,6 +155,7 @@ export default function TaskDashboardComponent() {
           </TabsContent>
         ))}
       </Tabs>
+      <Link href="/customer/newTask">
       <Button
         className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg"
         onClick={handleNewTask}
@@ -159,6 +163,7 @@ export default function TaskDashboardComponent() {
         <Plus className="w-6 h-6" />
         <span className="sr-only">New Task</span>
       </Button>
+      </Link>
     </div>
   )
 }

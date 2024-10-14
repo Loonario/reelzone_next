@@ -1,6 +1,6 @@
 "use client"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { AvatarCust, AvatarFallbackCust, AvatarImageCust } from "@/components/ui/avatar-customized"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -24,10 +24,10 @@ export function Navbar() {
             <DropdownMenuTrigger asChild>
               <div className="flex h-8 w-8 rounded-full overflow-hidden items-center border" >
               <Button variant="ghost" className="relative w-full p-0">
-                <Avatar>
-                  <AvatarImage src="/img/customer_ava.jpg" alt="Jonny Snow" />
-                  <AvatarFallback className="bg-transparent">JS</AvatarFallback>
-                </Avatar>
+                <AvatarCust>
+                  <AvatarImageCust src="/img/customer_ava.jpg" alt="Jonny Snow" />
+                  <AvatarFallbackCust className="bg-transparent">JS</AvatarFallbackCust>
+                </AvatarCust>
               </Button>
               </div>
             </DropdownMenuTrigger>

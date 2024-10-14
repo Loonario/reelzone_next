@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { AvatarCust, AvatarFallbackCust, AvatarImageCust } from "@/components/ui/avatar-customized"
 import { Edit, MapPin } from "lucide-react"
 
 export interface CustomerProfileProps {
@@ -25,10 +25,12 @@ function CustomerProfileComponent ({
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col items-center text-center mb-6">
-            <Avatar className="w-24 h-24 mb-4">
-              <AvatarImage src={avatarUrl} alt={`${firstName} ${lastName}`} />
-              <AvatarFallback>{firstName}{lastName}</AvatarFallback>
-            </Avatar>
+            <div className="rounded-full overflow-hidden w-24 h-24 items-center" >
+            <AvatarCust>
+              <AvatarImageCust src={avatarUrl} alt={`${firstName} ${lastName}`} />
+              <AvatarFallbackCust>{firstName}{lastName}</AvatarFallbackCust>
+            </AvatarCust>
+            </div>
             <h1 className="text-2xl font-bold mb-1">{firstName} {lastName}</h1>
             <p className="text-muted-foreground mb-1">{instagramNickname}</p>
             <p className="text-sm text-muted-foreground flex items-center">

@@ -8,7 +8,7 @@ export default function CustomerProfile() {
       lastName="Doe"
       instagramNickname="@johndoe"
       location="Los Angeles, CA"
-      avatarUrl="/path/to/avatar.jpg"
+      avatarUrl="/img/customer_ava.jpg"
       credits={100}
     />
   )

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import Link from 'next/link';
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -15,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { AvatarCust, AvatarFallbackCust, AvatarImageCust } from "@/components/ui/avatar-customized"
 
 
 interface TaskDetailsProps {
@@ -90,6 +91,11 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
     { value: "on-hold", label: "On Hold", color: "bg-red-500" },
     { value: "archived", label: "Archived", color: "bg-gray-500" },
   ]
+
+  const handleNewTask  = () => {
+    // Placeholder function for creating a new task
+    console.log("Create new task")
+  }
 
   const handleVersionSelect = (reelId: number, versionId: number) => {
     setSelectedVersions(prev => ({ ...prev, [reelId]: versionId }))
@@ -599,10 +605,10 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
                     <Card>
                         <CardContent className="p-4">
                           <div className="flex items-center space-x-4">
-                            <Avatar className="w-16 h-16">
-                              <AvatarImage src="/img/editor_ava.jpg" alt="Current Reels Maker" />
-                              <AvatarFallback>RM</AvatarFallback>
-                            </Avatar>
+                            <AvatarCust className="w-16 h-16 rounded-sm">
+                              <AvatarImageCust src="/img/editor_ava.jpg" alt="Current Reels Maker" />
+                              <AvatarFallbackCust>RM</AvatarFallbackCust>
+                            </AvatarCust>
                             <div className="flex-grow">
                               <h3 className="text-lg font-semibold">John Doe</h3>
                               <p className="text-sm text-muted-foreground">Current Reels Maker</p>
@@ -662,6 +668,15 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
           </CardContent>
         </Card>
       </div>
+      <Link href="/customer/newTask">
+      <Button
+        className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg"
+        onClick={handleNewTask}
+      >
+        <Plus className="w-6 h-6" />
+        <span className="sr-only">New Task</span>
+      </Button>
+      </Link>
     </div>
   )
 }

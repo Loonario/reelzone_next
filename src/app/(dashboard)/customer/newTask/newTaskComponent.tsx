@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { AvatarCust, AvatarFallbackCust, AvatarImageCust } from "@/components/ui/avatar-customized"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Play, Plus, Trash2, Upload, X } from "lucide-react"
 import Image from "next/image"
+import Link from 'next/link';
 
 // Mock data for favorite reels
 const favoriteReels = [
@@ -513,10 +514,10 @@ export default function NewTask() {
                   <Card key={editor.id} className="flex overflow-hidden items-center cursor-pointer hover:shadow-lg" onClick={() => handleEditorSelection(editor)}>
                     <CardContent className="flex items-center overflow-hidden p-0">
                       <div className="flex flex-row overflow-hidden min-w-20 min-h-20 max-w-20 max-h-20">
-                      <Avatar>
-                      <AvatarImage src={editor.avatar}/>
-                      <AvatarFallback>{editor.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
+                      <AvatarCust>
+                      <AvatarImageCust src={editor.avatar}/>
+                      <AvatarFallbackCust>{editor.name.charAt(0)}</AvatarFallbackCust>
+                      </AvatarCust>
                       </div>
                       {/* <Image
                         src={editor.avatar}
@@ -541,10 +542,10 @@ export default function NewTask() {
                   <div key={editor.id} className="flex items-center justify-between bg-muted p-2 rounded">
                     <div className="flex items-center">
                     <div className="flex flex-row overflow-hidden min-w-20 min-h-20 max-w-20 max-h-20 rounded">
-                      <Avatar>
-                      <AvatarImage src={editor.avatar}/>
-                      <AvatarFallback>{editor.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
+                      <AvatarCust>
+                      <AvatarImageCust src={editor.avatar}/>
+                      <AvatarFallbackCust>{editor.name.charAt(0)}</AvatarFallbackCust>
+                      </AvatarCust>
                       </div>
                       <span className= "ml-4">{editor.name}</span>
                     </div>

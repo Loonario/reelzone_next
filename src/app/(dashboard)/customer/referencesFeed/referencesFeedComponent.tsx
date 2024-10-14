@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { AvatarCust, AvatarFallbackCust, AvatarImageCust } from "@/components/ui/avatar-customized"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import Link from 'next/link';
@@ -95,10 +95,10 @@ export default function ReferencesFeedComponent() {
                     <h2 className="font-semibold mb-2">{reel.name}</h2>
                     <div className="flex items-center">
                         <div className="h-6 w-6 overflow-hidden rounded-full" >
-                      <Avatar>
-                        <AvatarImage src={reel.editorAvatar} alt={reel.editorName} />
-                        <AvatarFallback>{reel.editorName[0]}</AvatarFallback>
-                      </Avatar>
+                      <AvatarCust>
+                        <AvatarImageCust src={reel.editorAvatar} alt={reel.editorName} />
+                        <AvatarFallbackCust>{reel.editorName[0]}</AvatarFallbackCust>
+                      </AvatarCust>
                       </div>
                       <span className="ml-2 text-sm text-muted-foreground">{reel.editorName}</span>
                     </div>
@@ -119,10 +119,10 @@ export default function ReferencesFeedComponent() {
                 </div>
                 <div className="flex items-center mb-4">
                     <div className="h-8 w-8 rounded-full overflow-hidden">
-                  <Avatar>
-                    <AvatarImage src={reel.editorAvatar} alt={reel.editorName} />
-                    <AvatarFallback>{reel.editorName[0]}</AvatarFallback>
-                  </Avatar>
+                  <AvatarCust>
+                    <AvatarImageCust src={reel.editorAvatar} alt={reel.editorName} />
+                    <AvatarFallbackCust>{reel.editorName[0]}</AvatarFallbackCust>
+                  </AvatarCust>
                   </div>
                   <span className="ml-2 font-semibold">{reel.editorName}</span>
                 </div>
