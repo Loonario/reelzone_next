@@ -41,30 +41,30 @@ const config: Config = {
   				DEFAULT: 'hsl(var(--destructive))',
   				foreground: 'hsl(var(--destructive-foreground))'
   			},
-			  onreview: {
-				DEFAULT: 'hsl(var(--onreview))',
-				foreground: 'hsl(var(--onreview-foreground))'
-			},
-			inprogress: {
-				DEFAULT: 'hsl(var(--inprogress))',
-				foreground: 'hsl(var(--inprogress-foreground))'
-			},
-			inqueue: {
-				DEFAULT: 'hsl(var(--inqueue))',
-				foreground: 'hsl(var(--inqueue-foreground))'
-			},
-			onhold: {
-				DEFAULT: 'hsl(var(--onhold))',
-				foreground: 'hsl(var(--onhold-foreground))'
-			},
-			done: {
-				DEFAULT: 'hsl(var(--done))',
-				foreground: 'hsl(var(--done-foreground))'
-			},
-			archived: {
-				DEFAULT: 'hsl(var(--archived))',
-				foreground: 'hsl(var(--archived-foreground))'
-			},
+  			onreview: {
+  				DEFAULT: 'hsl(var(--onreview))',
+  				foreground: 'hsl(var(--onreview-foreground))'
+  			},
+  			inprogress: {
+  				DEFAULT: 'hsl(var(--inprogress))',
+  				foreground: 'hsl(var(--inprogress-foreground))'
+  			},
+  			inqueue: {
+  				DEFAULT: 'hsl(var(--inqueue))',
+  				foreground: 'hsl(var(--inqueue-foreground))'
+  			},
+  			onhold: {
+  				DEFAULT: 'hsl(var(--onhold))',
+  				foreground: 'hsl(var(--onhold-foreground))'
+  			},
+  			done: {
+  				DEFAULT: 'hsl(var(--done))',
+  				foreground: 'hsl(var(--done-foreground))'
+  			},
+  			archived: {
+  				DEFAULT: 'hsl(var(--archived))',
+  				foreground: 'hsl(var(--archived-foreground))'
+  			},
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
@@ -80,6 +80,28 @@ const config: Config = {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
+  		},
+  		keyframes: {
+  			'accordion-down': {
+  				from: {
+  					height: '0'
+  				},
+  				to: {
+  					height: 'var(--radix-accordion-content-height)'
+  				}
+  			},
+  			'accordion-up': {
+  				from: {
+  					height: 'var(--radix-accordion-content-height)'
+  				},
+  				to: {
+  					height: '0'
+  				}
+  			}
+  		},
+  		animation: {
+  			'accordion-down': 'accordion-down 0.2s ease-out',
+  			'accordion-up': 'accordion-up 0.2s ease-out'
   		}
   	}
   },
