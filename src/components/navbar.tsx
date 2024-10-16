@@ -14,7 +14,7 @@ import Link from "next/link"
 
 export function Navbar() {
   return (
-    <nav className="border-b">
+    <nav className="border-b fixed top-0 left-0 w-full bg-background z-[500]">
       <div className="container mx-auto flex h-16 items-center px-12 max-w-[1440px]">
         <Link href="/" className="flex items-center">
           <span className="text-2xl font-bold">ReelZone</span>
@@ -31,7 +31,7 @@ export function Navbar() {
               </Button>
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
+            <DropdownMenuContent className="w-56 z-[600]" align="end" forceMount>
               <DropdownMenuItem asChild>
                 <Link href="/customer/profile" className="flex w-full">
                   <User className="mr-2 h-4 w-4" />

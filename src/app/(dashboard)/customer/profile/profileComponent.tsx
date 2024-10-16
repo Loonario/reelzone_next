@@ -21,7 +21,7 @@ function CustomerProfileComponent ({
   credits
 }: CustomerProfileProps) {
   return (
-    <div className="container mx-auto p-4 max-w-2xl">
+    <div className="container mx-auto px-12 py-4 max-w-2xl">
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col items-center text-center mb-6">

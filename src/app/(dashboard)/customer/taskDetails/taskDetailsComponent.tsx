@@ -1,13 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import Link from 'next/link';
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { CheckCircle2, Download, Play, Plus, Trash2, Upload, X } from "lucide-react"
+import { CheckCircle2, Download, Play, Plus, Trash2, Upload, X, Paperclip, File, Image as ImageIcon} from "lucide-react"
 import Image from "next/image"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Input } from "@/components/ui/input"
@@ -17,7 +17,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Checkbox } from "@/components/ui/checkbox"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { AvatarCust, AvatarFallbackCust, AvatarImageCust } from "@/components/ui/avatar-customized"
-
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 interface TaskDetailsProps {
     taskName: string
@@ -35,6 +39,10 @@ interface TaskDetailsProps {
       }[]
       approvedVersion?: number
     }[]
+  }
+
+  interface AttachedFile extends File {
+    preview?: string;
   }
 
 // Mock data (you may want to move this to a separate file or fetch from an API)
@@ -74,8 +82,10 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
   const [status, setStatus] = useState(initialStatus)
   const [selectedVersions, setSelectedVersions] = useState<Record<number, number>>({})
   const [approvedVersions, setApprovedVersions] = useState<Record<number, number>>({})
-  const [messages, setMessages] = useState<{ sender: string; text: string }[]>([])
+  const [messages, setMessages] = useState<{ sender: string; text: string; files?: AttachedFile[] }[]>([])
   const [newMessage, setNewMessage] = useState("")
+  const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
     // States from NewTask component
     const [taskDescription, setTaskDescription] = useState("")
@@ -119,12 +129,67 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault()
-    if (newMessage.trim()) {
-      setMessages([...messages, { sender: "You", text: newMessage.trim() }])
+    if (newMessage.trim() || attachedFiles.length > 0) {
+      const messageObj = {
+        sender: "You",
+        text: newMessage.trim(),
+        files: attachedFiles.length > 0 ? attachedFiles : undefined
+      }
+      setMessages([...messages, messageObj])
       setNewMessage("")
-      // Here you would typically send the message to a backend
+      setAttachedFiles([])
+      // Here you would typically send the message and files to a backend
     }
   }
+
+  const handleFileAttach = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (files) {
+      const newFiles = Array.from(files).map(file => {
+        const attachedFile = file as AttachedFile;
+        if (file.type.startsWith('image/')) {
+          attachedFile.preview = URL.createObjectURL(file);
+        }
+        return attachedFile;
+      });
+      setAttachedFiles(prev => [...prev, ...newFiles])
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }
+
+  const handleAttachClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleRemoveFile = (fileToRemove: File) => {
+    setAttachedFiles(prev => prev.filter(file => file !== fileToRemove))
+  }
+
+  const handleDownloadFile = (file: File) => {
+    const url = window.URL.createObjectURL(new Blob([file]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', file.name)
+    document.body.appendChild(link)
+    link.click()
+    link.parentNode?.removeChild(link)
+  }
+
+  const handleDeleteMessageFile = (messageIndex: number, fileIndex: number) => {
+    setMessages(prevMessages => {
+      const newMessages = [...prevMessages]
+      if (newMessages[messageIndex].files) {
+        newMessages[messageIndex].files = newMessages[messageIndex].files?.filter((_, index) => index !== fileIndex)
+        if (newMessages[messageIndex].files?.length === 0) {
+          delete newMessages[messageIndex].files
+        }
+      }
+      return newMessages
+    })
+  }
+
   // Handler functions from NewTask component
   const handleReferenceToggle = (id: number) => {
     setSelectedReferences(prev =>
@@ -200,6 +265,16 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
     ))
   }
 
+  useEffect(() => {
+    return () => {
+      attachedFiles.forEach(file => {
+        if (file.preview) {
+          URL.revokeObjectURL(file.preview)
+        }
+      })
+    }
+  }, [attachedFiles])
+  
   return (
     <div className="flex justify-center min-h-screen bg-background">
       <div className="container max-w-[1440px] mx-auto px-12 py-4">
@@ -645,22 +720,116 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
               <h2 className="text-xl font-semibold mb-4">Chat</h2>
               <Card>
                 <CardContent className="p-4">
-                  <ScrollArea className="h-[300px] mb-4">
-                    {messages.map((message, index) => (
-                      <div key={index} className="mb-2">
+                <ScrollArea className="h-[300px] mb-4">
+                    {messages.map((message, messageIndex) => (
+                      <div key={messageIndex} className="mb-2">
                         <span className="font-semibold">{message.sender}: </span>
                         <span>{message.text}</span>
+                        {message.files && message.files.length > 0 && (
+                          <div className="mt-1 flex flex-wrap gap-2">
+                            {message.files.map((file, fileIndex) => (
+                              <Popover key={fileIndex}>
+                                <PopoverTrigger asChild>
+                                  <div className="relative cursor-pointer">
+                                    {file.type.startsWith('image/') && file.preview ? (
+                                      <Image
+                                        src={file.preview}
+                                        alt={file.name}
+                                        width={100}
+                                        height={100}
+                                        className="rounded-md object-cover"
+                                      />
+                                    ) : (
+                                      <div className="w-[100px] h-[100px] flex items-center justify-center bg-muted rounded-md">
+                                        <File className="w-8 h-8" />
+                                      </div>
+                                    )}
+                                    <span className="absolute bottom-1 left-1 right-1 text-xs text-white bg-black bg-opacity-50 rounded px-1 truncate">
+                                      {file.name}
+                                    </span>
+                                  </div>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-40">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="w-full justify-start"
+                                    onClick={() => handleDownloadFile(file)}
+                                  >
+                                    <Download className="mr-2 h-4 w-4" />
+                                    Download
+                                  </Button>
+                                  {message.sender === "You" && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="w-full justify-start"
+                                      onClick={() => handleDeleteMessageFile(messageIndex, fileIndex)}
+                                    >
+                                      <Trash2 className="mr-2 h-4 w-4" />
+                                      Delete
+                                    </Button>
+                                  )}
+                                </PopoverContent>
+                              </Popover>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </ScrollArea>
-                  <form onSubmit={handleSendMessage} className="flex gap-2">
-                    <Input
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      placeholder="Type your message..."
-                      className="flex-grow"
-                    />
-                    <Button type="submit">Send</Button>
+                  <form onSubmit={handleSendMessage} className="space-y-2">
+                    <div className="flex gap-2">
+                      <Input
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder="Type your message..."
+                        className="flex-grow"
+                      />
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileAttach}
+                        className="hidden"
+                        multiple
+                      />
+                      <Button type="button" variant="outline" onClick={handleAttachClick}>
+                        <Paperclip className="w-4 h-4" />
+                      </Button>
+                      <Button type="submit">Send</Button>
+                    </div>
+                    {attachedFiles.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {attachedFiles.map((file, index) => (
+                          <div key={index} className="relative group">
+                            {file.type.startsWith('image/') && file.preview ? (
+                              <Image
+                                src={file.preview}
+                                alt={file.name}
+                                width={100}
+                                height={100}
+                                className="rounded-md object-cover"
+                              />
+                            ) : (
+                              <div className="w-[100px] h-[100px] flex items-center justify-center bg-muted rounded-md">
+                                <File className="w-8 h-8" />
+                              </div>
+                            )}
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-1 right-1 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => handleRemoveFile(file)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                            <span className="absolute bottom-1 left-1 right-1 text-xs text-white bg-black bg-opacity-50 rounded px-1 truncate">
+                              {file.name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </form>
                 </CardContent>
               </Card>
