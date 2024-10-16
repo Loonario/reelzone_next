@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { CheckCircle2, Download, Play, Plus, Trash2, Upload, X, Paperclip, File, Image as ImageIcon} from "lucide-react"
+import { CheckCircle2, Download, Play, Plus, Trash2, Upload, X, Paperclip, File, Image as ImageIcon, MoreVertical, Edit} from "lucide-react"
 import Image from "next/image"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Input } from "@/components/ui/input"
@@ -41,9 +41,63 @@ interface TaskDetailsProps {
     }[]
   }
 
+  interface Message {
+    id: string;
+    sender: string;
+    text: string;
+    files?: AttachedFile[];
+    timestamp: Date;
+    edited?: Date;
+    isRead: boolean;
+    isDeleted: boolean;
+  }
   interface AttachedFile extends File {
     preview?: string;
   }
+
+  // Mock data for chat messages
+const mockMessages: Message[] = [
+  {
+    id: '1',
+    sender: 'You',
+    text: 'Hello! I have a question about the project.',
+    timestamp: new Date('2023-06-10T10:00:00'),
+    isRead: true,
+    isDeleted: false,
+  },
+  {
+    id: '2',
+    sender: 'John',
+    text: 'Sure, what would you like to know?',
+    timestamp: new Date('2023-06-10T10:05:00'),
+    isRead: true,
+    isDeleted: false,
+  },
+  {
+    id: '3',
+    sender: 'You',
+    text: 'I was wondering about the deadline for the first milestone.',
+    timestamp: new Date('2023-06-10T10:10:00'),
+    isRead: true,
+    isDeleted: false,
+  },
+  {
+    id: '4',
+    sender: 'John',
+    text: "The first milestone is due next Friday. Do you think you'll be able to meet that deadline?",
+    timestamp: new Date('2023-06-10T10:15:00'),
+    isRead: true,
+    isDeleted: false,
+  },
+  {
+    id: '5',
+    sender: 'You',
+    text: 'Yes, I think that should be fine. Thanks for the information!',
+    timestamp: new Date('2023-06-10T10:20:00'),
+    isRead: false,
+    isDeleted: false,
+  },
+];
 
 // Mock data (you may want to move this to a separate file or fetch from an API)
 const favoriteReels = [
@@ -82,10 +136,12 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
   const [status, setStatus] = useState(initialStatus)
   const [selectedVersions, setSelectedVersions] = useState<Record<number, number>>({})
   const [approvedVersions, setApprovedVersions] = useState<Record<number, number>>({})
-  const [messages, setMessages] = useState<{ sender: string; text: string; files?: AttachedFile[] }[]>([])
+  const [messages, setMessages] = useState<Message[]>(mockMessages)
   const [newMessage, setNewMessage] = useState("")
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([])
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
 
     // States from NewTask component
     const [taskDescription, setTaskDescription] = useState("")
@@ -130,15 +186,19 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault()
     if (newMessage.trim() || attachedFiles.length > 0) {
-      const messageObj = {
+      const messageObj: Message = {
+        id: Date.now().toString(),
         sender: "You",
         text: newMessage.trim(),
-        files: attachedFiles.length > 0 ? attachedFiles : undefined
+        files: attachedFiles.length > 0 ? attachedFiles : undefined,
+        timestamp: new Date(),
+        isRead: false,
+        isDeleted: false,
       }
       setMessages([...messages, messageObj])
       setNewMessage("")
       setAttachedFiles([])
-      // Here you would typically send the message and files to a backend
+      //Here logic to send to the back end
     }
   }
 
@@ -177,17 +237,41 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
     link.parentNode?.removeChild(link)
   }
 
-  const handleDeleteMessageFile = (messageIndex: number, fileIndex: number) => {
-    setMessages(prevMessages => {
-      const newMessages = [...prevMessages]
-      if (newMessages[messageIndex].files) {
-        newMessages[messageIndex].files = newMessages[messageIndex].files?.filter((_, index) => index !== fileIndex)
-        if (newMessages[messageIndex].files?.length === 0) {
-          delete newMessages[messageIndex].files
-        }
-      }
-      return newMessages
-    })
+  const handleDeleteMessageFile = (messageId: string, fileIndex: number) => {
+    setMessages(prevMessages => prevMessages.map(message => 
+      message.id === messageId && message.files
+        ? { ...message, files: message.files.filter((_, index) => index !== fileIndex) }
+        : message
+    ))
+  }
+
+  const handleEditMessage = (messageId: string) => {
+    const messageToEdit = messages.find(m => m.id === messageId)
+    if (messageToEdit) {
+      setNewMessage(messageToEdit.text)
+      setAttachedFiles(messageToEdit.files || [])
+      setEditingMessageId(messageId)
+    }
+  }
+
+  const handleUpdateMessage = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (editingMessageId) {
+      setMessages(prevMessages => prevMessages.map(message =>
+        message.id === editingMessageId
+          ? { ...message, text: newMessage, files: attachedFiles, edited: new Date() }
+          : message
+      ))
+      setNewMessage("")
+      setAttachedFiles([])
+      setEditingMessageId(null)
+    }
+  }
+
+  const handleDeleteMessage = (messageId: string) => {
+    setMessages(prevMessages => prevMessages.filter(message => 
+      message.id !== messageId || (message.isRead && (message.isDeleted = true, message.text = "Message was deleted", message.files = undefined, true))
+    ))
   }
 
   // Handler functions from NewTask component
@@ -274,7 +358,13 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
       })
     }
   }, [attachedFiles])
-  
+
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight
+    }
+  }, [messages])
+
   return (
     <div className="flex justify-center min-h-screen bg-background">
       <div className="container max-w-[1440px] mx-auto px-12 py-4">
@@ -720,12 +810,45 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
               <h2 className="text-xl font-semibold mb-4">Chat</h2>
               <Card>
                 <CardContent className="p-4">
-                <ScrollArea className="h-[300px] mb-4">
+               <ScrollArea className="h-[300px] mb-4" ref={scrollAreaRef}>
                     {messages.map((message, messageIndex) => (
-                      <div key={messageIndex} className="mb-2">
-                        <span className="font-semibold">{message.sender}: </span>
-                        <span>{message.text}</span>
-                        {message.files && message.files.length > 0 && (
+                      <div key={message.id} className="mb-2">
+                        <div className="flex justify-between items-start">
+                          <div className={message.isDeleted ? "text-muted-foreground opacity-50" : ""}>
+                            <span className="font-semibold">{message.sender}: </span>
+                            <span>{message.text}</span>
+                          </div>
+                          {message.sender === "You" && !message.isDeleted && (
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-40">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="w-full justify-start"
+                                  onClick={() => handleEditMessage(message.id)}
+                                >
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  Edit
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="w-full justify-start"
+                                  onClick={() => handleDeleteMessage(message.id)}
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Delete
+                                </Button>
+                              </PopoverContent>
+                            </Popover>
+                          )}
+                        </div>
+                        {!message.isDeleted && message.files && message.files.length > 0 && (
                           <div className="mt-1 flex flex-wrap gap-2">
                             {message.files.map((file, fileIndex) => (
                               <Popover key={fileIndex}>
@@ -764,7 +887,7 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
                                       variant="ghost"
                                       size="sm"
                                       className="w-full justify-start"
-                                      onClick={() => handleDeleteMessageFile(messageIndex, fileIndex)}
+                                      onClick={() => handleDeleteMessageFile(message.id, fileIndex)}
                                     >
                                       <Trash2 className="mr-2 h-4 w-4" />
                                       Delete
@@ -775,10 +898,15 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
                             ))}
                           </div>
                         )}
+                        {message.edited && (
+                          <div className="text-xs text-muted-foreground text-right mt-1">
+                            Edited {message.edited.toLocaleString()}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </ScrollArea>
-                  <form onSubmit={handleSendMessage} className="space-y-2">
+                  <form onSubmit={editingMessageId ? handleUpdateMessage : handleSendMessage} className="space-y-2">
                     <div className="flex gap-2">
                       <Input
                         value={newMessage}
@@ -794,9 +922,9 @@ export default function TaskDetails({ taskName, initialStatus, reels }: TaskDeta
                         multiple
                       />
                       <Button type="button" variant="outline" onClick={handleAttachClick}>
-                        <Paperclip className="w-4 h-4" />
+                        <Paperclip className="w-4  h-4" />
                       </Button>
-                      <Button type="submit">Send</Button>
+                      <Button type="submit">{editingMessageId ? 'Update' : 'Send'}</Button>
                     </div>
                     {attachedFiles.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-2">
