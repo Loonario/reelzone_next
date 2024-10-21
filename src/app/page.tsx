@@ -1,12 +1,37 @@
-import ReferencesFeedComponent from './(dashboard)/customer/referencesFeed/referencesFeedComponent';
+import { redirect } from 'next/navigation'
+import { getRoleBasedPath } from '@/utils/roleUtils'
+import { UserRole } from '@/types'
+
+//import ReferencesFeedComponent from './(customer)/referencesFeed/referencesFeedComponent';
 // import Link from 'next/link';
 // import {Button}  from "@/components/ui/button"
 // import Image from "next/image";
 
-export default function Home() {
+export default async function Home() {
+  const res = await fetch('/api/auth/check', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  })
 
-  return (
-    <ReferencesFeedComponent/>
+  if (!res.ok) {
+    redirect('/login')
+  }
+
+  const { authenticated, role } = await res.json()
+
+  if (!authenticated) {
+    redirect('/auth/login')
+  }
+
+  const path = getRoleBasedPath(role as UserRole)
+  redirect(path)
+  //return (
+    
+    //<ReferencesFeedComponent/>
+
     // <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
     //   <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
     //     <Image
@@ -104,5 +129,5 @@ export default function Home() {
     //     </a>
     //   </footer>
     // </div>
-  );
+  //);
 }

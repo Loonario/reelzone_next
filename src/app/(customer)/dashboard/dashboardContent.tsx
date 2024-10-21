@@ -78,7 +78,7 @@ const statusOptions = [
   "Archived",
 ]
 
-export default function TaskDashboardComponent() {
+export default function DashboardContent() {
   const [activeTab, setActiveTab] = useState("On Review")
   const [tasks, setTasks] = useState(initialTasks)
 
@@ -202,7 +202,7 @@ export default function TaskDashboardComponent() {
           </TabsContent>
         ))}
       </Tabs>
-      <Link href="/customer/newTask">
+      <Link href="/newTask">
       <Button
         className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg"
         onClick={handleNewTask}
