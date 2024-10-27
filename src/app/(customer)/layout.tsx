@@ -1,4 +1,5 @@
-import { Navbar } from "@/components/Navbar"
+import Navbar from "@/components/Navbar"
+import { Toaster } from "@/components/ui/toaster"
 //import localFont from "next/font/local";
 import "@/app/globals.css";
 
@@ -8,13 +9,11 @@ export default function CustomerLayout({
     children: React.ReactNode;
   }>) {
     return (
-      <html lang="en">
-        <body>
-          <div className="h-16" ></div>
-          <Navbar />
-          <main>{children}</main>
-        </body>
-      </html>
+      <section>
+          <div className="h-16" >
+          <Navbar /></div>
+          {children}
+          </section>
     );
   }
   

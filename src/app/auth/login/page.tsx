@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { useToast } from "@/hooks/use-toast"
 import { Facebook, Mail, Eye, EyeOff } from "lucide-react"
 import { getRoleBasedPath } from "@/utils/roleUtils"
 
@@ -22,6 +23,7 @@ export default function CustomerAuthPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const router = useRouter()
+  const { toast } = useToast()
 
   // useEffect(() => {
   //   const checkUser = async () => {
@@ -81,14 +83,28 @@ export default function CustomerAuthPage() {
 
     if (!res.ok) {
       setError(data.error)
+      toast({
+        title: "Error",
+        description: data.error,
+        variant: "destructive",
+      })
     } else {
       if (action === 'signup' || action === 'resetPassword') {
         setMessage(data.message)
+        toast({
+          title: "Success",
+          description: data.message,
+        })
       } else if (data.url) {
         window.location.href = data.url
       } else if (data.user) {
         if (data.user.role !== 'customer') {
           setError("You don't have permission to access this area")
+          toast({
+            title: "Error",
+            description: "You don't have permission to access this area",
+            variant: "destructive",
+          })
         } else {
           router.replace(getRoleBasedPath(data.user.role))
         }
@@ -267,14 +283,14 @@ export default function CustomerAuthPage() {
           </div>
         </CardFooter>
       </Card>
-      {message && (
+      {/* {message && (
         <div className="fixed flex bottom-0 justify-items-center items-center mb-4">
         <Alert className="place-self-center flex-col w-auto mt-4">
           <AlertTitle>Success</AlertTitle>
           <AlertDescription>{message}</AlertDescription>
         </Alert>
         </div>
-      )}
+      )} */}
     </div>
   )
 }

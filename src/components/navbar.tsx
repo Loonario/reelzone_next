@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { usePathname } from "next/navigation"
 import { AvatarCust, AvatarFallbackCust, AvatarImageCust } from "@/components/ui/avatar-customized"
@@ -14,11 +14,45 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { User, FileText, CreditCard, LogOut } from "lucide-react"
 import Link from "next/link"
+import { useToast } from "@/hooks/use-toast"
+import { useProfile } from "@/contexts/ProfileContext"
 
-export function Navbar() {
+// interface UserProfile {
+//   id: string
+//   first_name: string
+//   last_name: string
+//   avatar: string
+// }
+
+export default function Navbar() {
   const [isLoading, setIsLoading] = useState(false)
+  //const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const router = useRouter()
   const pathname = usePathname()
+  const { toast } = useToast()
+  const { profile } = useProfile()
+
+  // useEffect(() => {
+  //   fetchUserProfile()
+  // }, [])
+
+  // const fetchUserProfile = async () => {
+  //   try {
+  //     const response = await fetch('/api/profile')
+  //     if (!response.ok) {
+  //       throw new Error('Failed to fetch user profile')
+  //     }
+  //     const data = await response.json()
+  //     setUserProfile(data)
+  //   } catch (error) {
+  //     console.error('Error fetching user profile:', error)
+  //     toast({
+  //       title: "Error",
+  //       description: "Failed to load user profile. Please try again.",
+  //       variant: "destructive",
+  //     })
+  //   }
+  // }
 
   const handleLogout = async () => {
     setIsLoading(true)
@@ -34,9 +68,18 @@ export function Navbar() {
         throw new Error('Logout failed')
       }
 
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out.",
+      })
       router.push("/auth/login") // Redirect to login page after logout
     } catch (error) {
       console.error("Error logging out:", error)
+      toast({
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -45,7 +88,7 @@ export function Navbar() {
   return (
     <nav className="border-b fixed top-0 left-0 w-full bg-background z-[500]">
       <div className="container mx-auto flex h-16 items-center px-12 max-w-[1440px]">
-        <Link href="/" className="flex items-center">
+        <Link href="/referencesFeed" className="flex items-center">
           <span className="text-2xl font-bold">ReelZone</span>
         </Link>
         <div className="ml-auto flex items-center space-x-4">
@@ -53,9 +96,11 @@ export function Navbar() {
             <DropdownMenuTrigger asChild>
               <div className="flex h-8 w-8 rounded-full overflow-hidden items-center border" >
               <Button variant="ghost" className="relative w-full p-0">
-                <AvatarCust>
-                  <AvatarImageCust src="/img/customer_ava.jpg" alt="Jonny Snow" />
-                  <AvatarFallbackCust className="bg-transparent">JS</AvatarFallbackCust>
+              <AvatarCust>
+                  <AvatarImageCust src={profile?.avatar} alt={profile ? `${profile.first_name} ${profile.last_name}` : "User"} />
+                  <AvatarFallbackCust className="bg-transparent">
+                    {profile ? `${profile.first_name[0]}${profile.last_name[0]}` : "U"}
+                  </AvatarFallbackCust>
                 </AvatarCust>
               </Button>
               </div>
@@ -73,7 +118,7 @@ export function Navbar() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/tasksDashboard" className="flex w-full justify-items-start">
+                <Link href="/dashboard" className="flex w-full justify-items-start">
                 <Button
               className={`${pathname === "/tasksDashboard" ? "font-medium" : "font-normal"} justify-start p-0 h-5 w-full`}
                   variant="ghost"

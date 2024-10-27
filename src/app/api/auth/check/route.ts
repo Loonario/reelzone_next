@@ -20,5 +20,5 @@ export async function GET() {
     return NextResponse.json({ authenticated: false }, { status: 401 })
   }
 
-  return NextResponse.json({ authenticated: true, role: user.role }, { status: 200 })
+  return NextResponse.json({ authenticated: true, role: profile.role }, { status: 200 })
 }

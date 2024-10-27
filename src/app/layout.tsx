@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Navbar } from "@/components/Navbar"
+import { Toaster } from "@/components/ui/toaster"
+import { ProfileProvider } from "@/contexts/ProfileContext"
 import { Inter } from "next/font/google"
 //import localFont from "next/font/local";
 import "./globals.css";
@@ -29,7 +30,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-    <body className={inter.className}>{children}</body>
+    <body className={inter.className}>
+    <ProfileProvider>
+      <main>
+      {children}
+      <Toaster />
+      </main>
+      </ProfileProvider>
+      </body>
   </html>
     // <html lang="en">
     //   <body className={inter.className}>

@@ -9,19 +9,19 @@ export const getRoleBasedPath = (role: UserRole): string => {
     case 'admin':
       return '/admin/dashboard'
     default:
-      return '/login'
+      return '/auth/login'
   }
 }
 
 export const getRoleBasedLoginPath = (role: UserRole): string => {
   switch (role) {
     case 'customer':
-      return '/login'
+      return '/auth/login'
     case 'reels_maker':
-      return '/reels-maker-login'
+      return '/auth/reels-maker-login'
     case 'admin':
-      return '/admin-login'
+      return '/auth/admin-login'
     default:
-      return '/login'
+      return '/auth/login'
   }
 }

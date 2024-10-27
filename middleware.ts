@@ -18,7 +18,7 @@ export async function middleware(req: NextRequest) {
 
   // Check authentication
   if (!user) {
-    return NextResponse.redirect(new URL('/login', req.url))
+    return NextResponse.redirect(new URL('/auth/login', req.url))
   }
 
   // Check role-based access
@@ -29,7 +29,7 @@ export async function middleware(req: NextRequest) {
     .single()
 
   if (error || !profile) {
-    return NextResponse.redirect(new URL('/login', req.url))
+    return NextResponse.redirect(new URL('/auth/login', req.url))
   }
 
   const role = profile.role as UserRole

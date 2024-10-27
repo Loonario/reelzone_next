@@ -8,7 +8,7 @@ import { UserRole } from '@/types'
 // import Image from "next/image";
 
 export default async function Home() {
-  const res = await fetch('/api/auth/check', {
+  const res = await fetch(process.env.LOCAL_URL + '/api/auth/check', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -17,7 +17,7 @@ export default async function Home() {
   })
 
   if (!res.ok) {
-    redirect('/login')
+    redirect('/auth/login')
   }
 
   const { authenticated, role } = await res.json()
