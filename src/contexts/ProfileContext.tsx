@@ -29,12 +29,12 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
   useEffect(() => {
     const fetchProfile = async () => {
       setIsLoading(true)
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session) {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
         const { data, error } = await supabase
           .from('profile')
           .select('*')
-          .eq('id', session.user.id)
+          .eq('id', user.id)
           .single()
 
         if (error) {

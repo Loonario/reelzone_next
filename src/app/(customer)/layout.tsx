@@ -1,5 +1,4 @@
-import Navbar from "@/components/Navbar"
-import { Toaster } from "@/components/ui/toaster"
+import Navbar from "@/components/common/navbar"
 //import localFont from "next/font/local";
 import "@/app/globals.css";
 
