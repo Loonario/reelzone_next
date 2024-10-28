@@ -8,7 +8,7 @@ import { UserRole } from '@/types'
 // import Image from "next/image";
 
 export default async function Home() {
-  const res = await fetch(process.env.LOCAL_URL + '/api/auth/check', {
+  const res = await fetch(process.env.NEXT_PUBLIC_LOCAL_URL + '/api/auth/check', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

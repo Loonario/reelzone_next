@@ -12,15 +12,15 @@ export async function GET() {
     return NextResponse.json({ authenticated: false }, { status: 401 })
   }
 
-  const { data: profile, error } = await supabase
+  const { data, error } = await supabase
     .from('profile')
     .select('role')
     .eq('id', user.id)
     .single()
 
-  if (error || !profile) {
+  if (error || !data) {
     return NextResponse.json({ authenticated: false }, { status: 401 })
   }
 
-  return NextResponse.json({ authenticated: true, role: profile.role }, { status: 200 })
+  return NextResponse.json({ authenticated: true, role: data.role }, { status: 200 })
 }
