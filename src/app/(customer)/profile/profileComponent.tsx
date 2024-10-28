@@ -140,7 +140,7 @@ function CustomerProfileComponent() {
 
   return (
     <div className="container mx-auto px-12 py-4 max-w-2xl">
-      <Card>
+    <Card>
         <CardContent className="p-6">
           <div className="flex flex-col items-center text-center mb-6">
             <div className="rounded-full overflow-hidden w-24 h-24 items-center" >
@@ -282,8 +282,9 @@ function CustomerProfileComponent() {
             <Button>Buy Credits</Button>
           </div>
         </CardContent>
-      </Card>
+        </Card>
     </div>
+
   )
 }
 

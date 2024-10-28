@@ -16,6 +16,7 @@ import { User, FileText, CreditCard, LogOut } from "lucide-react"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 import { useProfile } from "@/contexts/ProfileContext"
+import {Profile} from "@/types"
 
 // interface UserProfile {
 //   id: string
@@ -31,6 +32,13 @@ export default function Navbar() {
   const pathname = usePathname()
   const { toast } = useToast()
   const { profile } = useProfile()
+  const [profileState, setProfileState] = useState<Profile | null>(null)
+
+  useEffect(() => {
+    if (profile) {
+      setProfileState(profile)
+    }
+  }, [profile])
 
   // useEffect(() => {
   //   fetchUserProfile()
@@ -97,9 +105,9 @@ export default function Navbar() {
               <div className="flex h-8 w-8 rounded-full overflow-hidden items-center border" >
               <Button variant="ghost" className="relative w-full p-0">
               <AvatarCust>
-                  <AvatarImageCust src={profile?.avatar} alt={profile ? `${profile.first_name} ${profile.last_name}` : "User"} />
+                  <AvatarImageCust src={profileState?.avatar} alt={profileState ? `${profileState.first_name} ${profileState.last_name}` : "User"} />
                   <AvatarFallbackCust className="bg-transparent">
-                    {profile ? `${profile.first_name[0]}${profile.last_name[0]}` : "U"}
+                    {profileState ? `${profileState.first_name[0]}${profileState.last_name[0]}` : "U"}
                   </AvatarFallbackCust>
                 </AvatarCust>
               </Button>
