@@ -47,6 +47,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
 
     fetchProfile()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const updateProfile = async (newData: Partial<Profile>) => {
